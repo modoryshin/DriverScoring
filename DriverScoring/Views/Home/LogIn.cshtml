@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "LogIn";
+}
+
+<html>
+
+<head>
+    <title>Вход</title>
+</head>
+
+<body>
+    <div class="formcontainer">
+        @using (Html.BeginForm())
+        {
+            <input class="SignInLogin" type="text" name="SignInLogin" placeholder="Введите логин" />
+            <input class="SignInPassword" type="password" name="SignInPassword" placeholder="Введите пароль" />
+            <input class="FormSub" type="submit" value="Войти" />
+        }
+    </div>
+</body>
+
+</html>
+
