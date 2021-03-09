@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverScoring", "DriverScor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScoreModelImplementation", "..\SimpleScoreModel\ScoreModelImplementation.csproj", "{C73B8AFE-7A2E-4AF2-A37B-2006C7345B1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestScoreModel", "UnitTestScoreModel\UnitTestScoreModel.csproj", "{1277FBF7-3D8C-4DDA-8ED8-6D458C4CAB6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C73B8AFE-7A2E-4AF2-A37B-2006C7345B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C73B8AFE-7A2E-4AF2-A37B-2006C7345B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C73B8AFE-7A2E-4AF2-A37B-2006C7345B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1277FBF7-3D8C-4DDA-8ED8-6D458C4CAB6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1277FBF7-3D8C-4DDA-8ED8-6D458C4CAB6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1277FBF7-3D8C-4DDA-8ED8-6D458C4CAB6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1277FBF7-3D8C-4DDA-8ED8-6D458C4CAB6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
