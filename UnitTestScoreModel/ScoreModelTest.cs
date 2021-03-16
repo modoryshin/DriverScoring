@@ -282,7 +282,7 @@ namespace UnitTestScoreModel
 
             ScoreModel testModel = new ScoreModel(data);
             int[] choices = { 1, 1, 0, 2, 0, 1};
-            string mathExpression = "0+1-2*3/5^4";
+            string mathExpression = "1+2-3*4/6^5";
             double expected = 40*1.5 + -10*0.5 - -30*0.5 * -20*1.5 / Math.Pow(30*0.7, 0*1.2);
             testModel.ToReversePolishNotation(mathExpression);
 

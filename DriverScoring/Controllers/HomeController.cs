@@ -10,13 +10,35 @@ namespace DriverScoring.Controllers
     {
         public ActionResult Index()
         {
+            /*
+             * 
+             * не получилось нормальный unit-test для контекста БД сделать пока. Поэтому через контроллер запускал. Эта штука работает и добавляет тестового пользователя
+            
+            DriverScoring.DBModels.mainEntitiesDB contextDB = new DriverScoring.DBModels.mainEntitiesDB();
+            
+
+            DriverScoring.DBModels.Пользователи person = new DriverScoring.DBModels.Пользователи();
+            person.Login = "LOGIN_TEST22";
+            person.Password = "PASSWORD_TEST22";
+
+            // Act
+            contextDB.Пользователи.Add(person);
+            contextDB.SaveChanges();
+
+            person.Login = "LOGIN_TEST";
+            person.Password = "PASSWORD_TEST";
+
+            // Act
+            contextDB.Пользователи.Add(person);
+            contextDB.SaveChanges();
+            */
+
             return View();
         }
 
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
