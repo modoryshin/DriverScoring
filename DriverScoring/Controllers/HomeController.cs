@@ -57,5 +57,15 @@ namespace DriverScoring.Controllers
         {
             return View();
         }
+
+        public ActionResult AdministratorPanel()
+        {
+            return View();
+        }
+
+        public ActionResult Survey()
+        {
+            return View();
+        }
     }
 }
