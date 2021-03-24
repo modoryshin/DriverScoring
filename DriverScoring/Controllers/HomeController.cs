@@ -59,6 +59,7 @@ namespace DriverScoring.Controllers
         [HttpPost]
         public ActionResult LogIn(string SignInLogin, string SignInPassword)
         {
+            db.Database.Connection.Open();
             List<DBModels.Пользователи> codes = (from e in db.Пользователи where (e.Login == SignInLogin && e.Password == SignInPassword) select e).ToList();
             if (codes.Count != 0)
             {
@@ -66,6 +67,7 @@ namespace DriverScoring.Controllers
                 if (obj.Count() != 0)
                 {
                     currentuser = codes[0];
+                    db.Database.Connection.Close();
                     return RedirectToAction("DriverPanel");
                 }
                 else
@@ -73,6 +75,8 @@ namespace DriverScoring.Controllers
 
                     List<long> id1 = (from e in db.Аналитики where (e.ПользовательID == codes[0].ПользовательID) select e.АналитикID).ToList();
                     currentuser = codes[0];
+
+                    db.Database.Connection.Close();
                     return RedirectToAction("AdministratorPanel");
                 }
             }
@@ -80,6 +84,8 @@ namespace DriverScoring.Controllers
             {
                 ViewData["Login"] = SignInLogin;
                 TempData["alertMessage"] = "Такой аккаунт не существует";
+
+                db.Database.Connection.Close();
                 return View();
             }
         }
