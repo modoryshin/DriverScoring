@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "DriverApplication";
+}
+
+<html>
+
+<head>
+    <link href="@Url.Content("~/Content/Style.css")" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="header">
+        <div class="accountname">@ViewData["Name"]</div>
+    </div>
+    <div class="content">
+        <div class="buttonApplication"><a href=@Url.Action("DriverApplication","Home")>Заявки</a></div>
+    </div>
+    <div class="footer"></div>
+</body>
+
+</html>
+
