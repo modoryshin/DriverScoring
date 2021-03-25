@@ -290,6 +290,8 @@
     <Content Include="Views\Home\AdministratorPanel.cshtml" />
     <Content Include="Views\Home\DriverPanel.cshtml" />
     <Content Include="Views\Home\DriverApplication.cshtml" />
+    <Content Include="Views\Home\ApplicationInfo.cshtml" />
+    <Content Include="Views\Home\EnterReason.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

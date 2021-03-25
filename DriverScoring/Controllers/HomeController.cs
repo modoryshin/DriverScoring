@@ -9,8 +9,9 @@ namespace DriverScoring.Controllers
 {
     public class HomeController : Controller
     {
-        static DBModels.mainEntitiesDB db = new DBModels.mainEntitiesDB();
+        public static DBModels.mainEntitiesDB db = new DBModels.mainEntitiesDB();
         static DBModels.Пользователи currentuser;
+        public static long RequestIdent;
         public ActionResult Index()
         {
             /*
@@ -59,6 +60,7 @@ namespace DriverScoring.Controllers
         [HttpPost]
         public ActionResult LogIn(string SignInLogin, string SignInPassword)
         {
+            ViewData.Clear();
             db.Database.Connection.Open();
             List<DBModels.Пользователи> codes = (from e in db.Пользователи where (e.Login == SignInLogin && e.Password == SignInPassword) select e).ToList();
             if (codes.Count != 0)
@@ -96,7 +98,7 @@ namespace DriverScoring.Controllers
         [HttpPost]
         public ActionResult Register(string RegisterLogin, string RegisterPassword, string RegisterPhone, string RegisterName, string BirthDate, string Series, string ID)
         {
-            
+            db.Database.Connection.Open();
             List<long> codes = (from e in db.Пользователи where (e.Login == RegisterLogin && e.Password == RegisterPassword) select e.ПользовательID).ToList();
             if (codes.Count == 0)
             {
@@ -127,7 +129,7 @@ namespace DriverScoring.Controllers
                 }
                 obj1.ВодительID = id;
                 db.Водители.Add(obj1);
-                db.SaveChanges();
+                db.SaveChanges(); db.Database.Connection.Close();
                 return RedirectToAction("LogIn");
             }
             else
@@ -140,6 +142,7 @@ namespace DriverScoring.Controllers
                 ViewData["Series"] = Series;
                 ViewData["ID"] = ID;
                 TempData["alertMessage"] = "Аккаунт с указанными данными уже существует";
+                db.Database.Connection.Close();
                 return View();
             }
 
@@ -147,19 +150,112 @@ namespace DriverScoring.Controllers
 
         public ActionResult AdministratorPanel()
         {
+            ViewData.Clear();
+            db.Database.Connection.Open();
+            ViewData["User"] = currentuser.Login;
+            List<DBModels.Запросы> list = (from e in db.Запросы select e).ToList();
+            db.Database.Connection.Close();
+            ViewData["RequestList"] = list;
             return View();
         }
 
         public ActionResult DriverPanel()
         {
+            ViewData.Clear();
             ViewData["User"] = currentuser.Login;
             return View();
         }
 
         public ActionResult DriverApplication()
         {
+            ViewData.Clear();
             ViewData["User"] = currentuser.Login;
             return View();
+        }
+
+        public ActionResult ApplicationInfo(string Id)
+        {
+            ViewData.Clear();
+            ViewData["Id"] = Id;
+            ViewData["Name"] = currentuser.Login;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AdministratorPanel(string ReqId)
+        {
+            return RedirectToAction("Application info",new { Id=ReqId});
+        }
+
+        public ActionResult ApplicationDecision(string dec,long requestid)
+        {
+            if (dec == "Принять")
+            {
+                db.Database.Connection.Open();
+                List<DBModels.Запросы> obj = (from e in db.Запросы where(e.ЗапросID==requestid) select e).ToList();
+                obj[0].ЗапросРассмотрен = 0;
+                db.SaveChanges();
+                DBModels.РезультатЗапроса obj1 = new DBModels.РезультатЗапроса();
+                obj1.АналитикID = currentuser.АналитикID;
+                obj1.МашинаВыдана = 0;
+                obj1.ПричинаОтказа = "-";
+                obj1.ЗапросID = requestid;
+                long id = 0;
+                try
+                {
+                    id = (long)db.РезультатЗапроса.Max(e => e.РезультатID) + 1;
+                }
+                catch
+                {
+
+                }
+                obj1.РезультатID = id;
+                db.РезультатЗапроса.Add(obj1);
+                db.SaveChanges();
+                db.Database.Connection.Close();
+                return RedirectToAction("AdministratorPanel");
+            }
+            else
+            {
+                RequestIdent = requestid;
+                return RedirectToAction("EnterReason",new {reqid=requestid });
+            }
+            
+        }
+        
+        public ActionResult EnterReason(long reqid)
+        {
+            ViewData.Clear();
+            ViewData["Name"] = currentuser.Login;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult EnterReason(string ReasonField)
+        {
+            db.Database.Connection.Open();
+            List<DBModels.Запросы> obj = (from e in db.Запросы where (e.ЗапросID == RequestIdent) select e).ToList();
+            obj[0].ЗапросРассмотрен = 0;
+            db.SaveChanges();
+            DBModels.РезультатЗапроса obj1 = new DBModels.РезультатЗапроса();
+            obj1.АналитикID = currentuser.АналитикID;
+            obj1.МашинаВыдана = 1;
+            obj1.ПричинаОтказа = ReasonField;
+            obj1.ЗапросID = RequestIdent;
+            long id = 0;
+            try
+            {
+                id = (long)db.РезультатЗапроса.Max(e => e.РезультатID) + 1;
+            }
+            catch
+            {
+
+            }
+            obj1.РезультатID = id;
+            db.РезультатЗапроса.Add(obj1);
+            db.SaveChanges();
+            db.Database.Connection.Close();
+            return RedirectToAction("AdministratorPanel");
         }
     }
 }
