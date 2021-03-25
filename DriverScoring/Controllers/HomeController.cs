@@ -4,12 +4,16 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Text.RegularExpressions;
+using System.Configuration;
 
 namespace DriverScoring.Controllers
 {
     public class HomeController : Controller
     {
-        public static DBModels.mainEntitiesDB db = new DBModels.mainEntitiesDB();
+        static ConnectionStringSettings c = ConfigurationManager.ConnectionStrings["mainEntitiesDB"];
+        static string fixedConnectionString = c.ConnectionString.Replace("{AppDir}", AppDomain.CurrentDomain.BaseDirectory);
+
+        public static DBModels.mainEntitiesDB db = new DBModels.mainEntitiesDB(fixedConnectionString);
         static DBModels.Пользователи currentuser;
         public static long RequestIdent;
         public ActionResult Index()
@@ -36,6 +40,7 @@ namespace DriverScoring.Controllers
             contextDB.Пользователи.Add(person);
             contextDB.SaveChanges();
             */
+
 
             return View();
         }
