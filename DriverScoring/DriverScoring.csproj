@@ -292,6 +292,8 @@
     <Content Include="Views\Home\DriverApplication.cshtml" />
     <Content Include="Views\Home\ApplicationInfo.cshtml" />
     <Content Include="Views\Home\EnterReason.cshtml" />
+    <Content Include="Views\Home\NewDriverApplication.cshtml" />
+    <Content Include="Views\Home\Survey.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

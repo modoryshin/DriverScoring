@@ -170,7 +170,22 @@ namespace DriverScoring.Controllers
         {
             ViewData.Clear();
             ViewData["User"] = currentuser.Login;
+            db.Database.Connection.Open();
+            List<DBModels.Запросы> list = (from e in db.Запросы where (e.ВодительID == currentuser.ВодительID) select e).ToList();
+            ViewData["Requests"] = list;
+            db.Database.Connection.Close();
             return View();
+        }
+        [HttpPost]
+        public ActionResult DriverApplication(long ReqIdVal)
+        {
+            db.Database.Connection.Open();
+            List<DBModels.Запросы> obj = (from e in db.Запросы where (e.ЗапросID == ReqIdVal) select e).ToList();
+            db.Запросы.Remove(obj[0]);
+            db.SaveChanges();
+            TempData["alertMessage"] = "Заявка была успешно удалена";
+            db.Database.Connection.Close();
+            return RedirectToAction("DriverApplication");
         }
 
         public ActionResult ApplicationInfo(string Id)
@@ -256,6 +271,40 @@ namespace DriverScoring.Controllers
             db.SaveChanges();
             db.Database.Connection.Close();
             return RedirectToAction("AdministratorPanel");
+        }
+        public ActionResult NewDriverApplication()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult NewDriverApplication(string CarId)
+        {
+            DBModels.Запросы obj = new DBModels.Запросы();
+            obj.ВодительID = currentuser.ВодительID;
+            obj.ЗапросРассмотрен = 1;
+            obj.ДатаЗапроса = DateTime.Today.ToString();
+            db.Database.Connection.Open();
+            long id = 0;
+            try
+            {
+                id = (long)db.Запросы.Max(e => e.ЗапросID) + 1;
+            }
+            catch
+            {
+
+            }
+            obj.ЗапросID = id;
+            obj.МашинаID = (long)(Convert.ToInt32(CarId));
+            obj.ВремяВыдачиМашины = "";
+            obj.ВремяПолученияМашины = "";
+            db.Запросы.Add(obj);
+            db.SaveChanges();
+            db.Database.Connection.Close();
+            return RedirectToAction("DriverApplication");
+        }
+        public ActionResult Survey()
+        {
+            return View();
         }
     }
 }
