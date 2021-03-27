@@ -12,6 +12,8 @@
 <body>
     <div class="header">
         <div class="accountname">@ViewData["Name"]</div>
+        <a href="@Url.Action("LogOut")">Выйти из аккаунта</a>
+        <a href="@Url.Action("DriverPanel")">На главную</a>
     </div>
     <div class="content">
         @{

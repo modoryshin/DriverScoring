@@ -42,7 +42,7 @@ namespace DriverScoring.Controllers
             */
 
 
-            return View();
+            return RedirectToAction("LogIn");
         }
 
         public ActionResult About()
@@ -155,50 +155,85 @@ namespace DriverScoring.Controllers
 
         public ActionResult AdministratorPanel()
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             db.Database.Connection.Open();
             ViewData["User"] = currentuser.Login;
             List<DBModels.Запросы> list = (from e in db.Запросы select e).ToList();
             db.Database.Connection.Close();
             ViewData["RequestList"] = list;
             return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         public ActionResult DriverPanel()
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             ViewData["User"] = currentuser.Login;
             return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         public ActionResult DriverApplication()
         {
-            ViewData.Clear();
-            ViewData["User"] = currentuser.Login;
-            db.Database.Connection.Open();
-            List<DBModels.Запросы> list = (from e in db.Запросы where (e.ВодительID == currentuser.ВодительID) select e).ToList();
-            ViewData["Requests"] = list;
-            db.Database.Connection.Close();
-            return View();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
+                ViewData["User"] = currentuser.Login;
+                db.Database.Connection.Open();
+                List<DBModels.Запросы> list = (from e in db.Запросы where (e.ВодительID == currentuser.ВодительID) select e).ToList();
+                ViewData["Requests"] = list;
+                db.Database.Connection.Close();
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
         [HttpPost]
         public ActionResult DriverApplication(long ReqIdVal)
         {
-            db.Database.Connection.Open();
-            List<DBModels.Запросы> obj = (from e in db.Запросы where (e.ЗапросID == ReqIdVal) select e).ToList();
-            db.Запросы.Remove(obj[0]);
-            db.SaveChanges();
-            TempData["alertMessage"] = "Заявка была успешно удалена";
-            db.Database.Connection.Close();
-            return RedirectToAction("DriverApplication");
+            if (currentuser != null)
+            {
+                db.Database.Connection.Open();
+                List<DBModels.Запросы> obj = (from e in db.Запросы where (e.ЗапросID == ReqIdVal) select e).ToList();
+                db.Запросы.Remove(obj[0]);
+                db.SaveChanges();
+                TempData["alertMessage"] = "Заявка была успешно удалена";
+                db.Database.Connection.Close();
+                return RedirectToAction("DriverApplication");
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         public ActionResult ApplicationInfo(string Id)
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             ViewData["Id"] = Id;
             ViewData["Name"] = currentuser.Login;
             return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         [HttpPost]
@@ -209,7 +244,9 @@ namespace DriverScoring.Controllers
 
         public ActionResult ApplicationDecision(string dec,long requestid)
         {
-            if (dec == "Принять")
+            if (currentuser != null)
+            {
+                if (dec == "Принять")
             {
                 db.Database.Connection.Open();
                 List<DBModels.Запросы> obj = (from e in db.Запросы where(e.ЗапросID==requestid) select e).ToList();
@@ -240,14 +277,26 @@ namespace DriverScoring.Controllers
                 RequestIdent = requestid;
                 return RedirectToAction("EnterReason",new {reqid=requestid });
             }
-            
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
+
         }
         
         public ActionResult EnterReason(long reqid)
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             ViewData["Name"] = currentuser.Login;
             return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         [HttpPost]
@@ -279,7 +328,15 @@ namespace DriverScoring.Controllers
         }
         public ActionResult NewDriverApplication()
         {
+            if (currentuser != null)
+            {
+                ViewData["Name"] = currentuser.Login;
             return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
         [HttpPost]
         public ActionResult NewDriverApplication(string CarId)
@@ -309,7 +366,20 @@ namespace DriverScoring.Controllers
         }
         public ActionResult Survey()
         {
+            if (currentuser != null)
+            {
+                ViewData["Name"] = currentuser.Login;
             return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
+        }
+        public ActionResult LogOut()
+        {
+            currentuser = null;
+            return RedirectToAction("LogIn");
         }
     }
 }

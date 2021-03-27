@@ -9,7 +9,11 @@
 </head>
 
 <body>
-    <div class="header"><div class="accountname">@ViewData["Name"]</div></div>
+    <div class="header">
+        <div class="accountname">@ViewData["Name"]</div>
+        <a href="@Url.Action("LogOut")">Выйти из аккаунта</a>
+        <a href="@Url.Action("AdministratorPanel")">На главную</a>
+    </div>
     <div class="content">
         @{DriverScoring.Controllers.HomeController.db.Database.Connection.Open();
             List<DriverScoring.DBModels.Запросы> list = (from e in DriverScoring.Controllers.HomeController.db.Запросы where (e.ЗапросID == (long)ViewData["Id"]) select e).ToList();
@@ -18,7 +22,7 @@
         <table>
             <tr><td>Дата запроса</td><td>@list[0].ДатаЗапроса</td></tr>
             <tr><td>Заявитель</td><td>@list[0].Водители.ПаспортныеДанные</td></tr>
-            <tr><td></td></tr>
+            
         </table>
             <div class="acceptbutton"><a href="@Url.Action("ApplicationDecision", new {dec="Принять",requestid=list[0].ЗапросID })">Принять заявление</a></div>
             <div class="acceptbutton"><a href="@Url.Action("ApplicationDecision", new {dec="Отказать" , requestid=list[0].ЗапросID})">Отказать</a></div>
