@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "Survey";
+}
+
+<html>
+<head>
+    <link href="@Url.Content("~/Content/Style.css")" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="header">
+        <div class="accountname">@ViewData["Name"]</div>
+        @*<a href="@Url.Action("LogOut")">Выйти из аккаунта</a>
+        <a href="@Url.Action("DriverPanel")">На главную</a>*@
+    </div>
+    <div class="content">
+        <table>
+            <tr>
+                <th></th>
+            </tr>
+            @using (Html.BeginForm())
+            {
+                <tr>
+                    <td>Возраст</td>
+                    <td><input type="text" name="Age" placeholder="30" /></td>
+                </tr>
+                <tr>
+                    <td>Количество детей</td>
+                    <td><input type="text" name="Children" placeholder="1" /></td>
+                </tr>
+                <tr>
+                    <td>Семейное положение</td>
+                    <td><input type="text" name="Family" placeholder="1" /></td>
+                </tr>
+                <tr>
+                    <td>Наличие кредита</td>
+                    <td><select name=""></select></td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="footer"></div>
+</body>
+</html>
+

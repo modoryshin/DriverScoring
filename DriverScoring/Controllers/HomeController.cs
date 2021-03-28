@@ -15,6 +15,7 @@ namespace DriverScoring.Controllers
 
         public static DBModels.mainEntitiesDB db = new DBModels.mainEntitiesDB(fixedConnectionString);
         static DBModels.Пользователи currentuser;
+        static string usertype = "";
         public static long RequestIdent;
         public ActionResult Index()
         {
@@ -41,13 +42,14 @@ namespace DriverScoring.Controllers
             contextDB.SaveChanges();
             */
 
-
-            return View();
+            return RedirectToAction("LogIn");
         }
 
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
 
@@ -55,11 +57,15 @@ namespace DriverScoring.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
 
         public ActionResult LogIn()
         {
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
         [HttpPost]
@@ -70,7 +76,8 @@ namespace DriverScoring.Controllers
             List<DBModels.Пользователи> codes = (from e in db.Пользователи where (e.Login == SignInLogin && e.Password == SignInPassword) select e).ToList();
             if (codes.Count != 0)
             {
-                List<DBModels.Водители> obj = (from e in db.Водители where (e.ПользовательID == codes[0].ПользовательID) select e).ToList();
+                long num = codes[0].ПользовательID;
+                List<DBModels.Водители> obj = (from e in db.Водители where (e.ПользовательID == num) select e).ToList();
                 if (obj.Count() != 0)
                 {
                     currentuser = codes[0];
@@ -79,8 +86,8 @@ namespace DriverScoring.Controllers
                 }
                 else
                 {
-
-                    List<long> id1 = (from e in db.Аналитики where (e.ПользовательID == codes[0].ПользовательID) select e.АналитикID).ToList();
+                    num = codes[0].ПользовательID;
+                    List<long> id1 = (from e in db.Аналитики where (e.ПользовательID == num) select e.АналитикID).ToList();
                     currentuser = codes[0];
 
                     db.Database.Connection.Close();
@@ -93,11 +100,14 @@ namespace DriverScoring.Controllers
                 TempData["alertMessage"] = "Такой аккаунт не существует";
 
                 db.Database.Connection.Close();
+                ViewBag.logged = currentuser != null;
                 return View();
             }
         }
         public ActionResult Register()
         {
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
         [HttpPost]
@@ -148,6 +158,8 @@ namespace DriverScoring.Controllers
                 ViewData["ID"] = ID;
                 TempData["alertMessage"] = "Аккаунт с указанными данными уже существует";
                 db.Database.Connection.Close();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
                 return View();
             }
 
@@ -155,35 +167,95 @@ namespace DriverScoring.Controllers
 
         public ActionResult AdministratorPanel()
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             db.Database.Connection.Open();
             ViewData["User"] = currentuser.Login;
             List<DBModels.Запросы> list = (from e in db.Запросы select e).ToList();
             db.Database.Connection.Close();
             ViewData["RequestList"] = list;
-            return View();
+                ViewBag.logged = currentuser != null;
+                usertype = "admin";
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         public ActionResult DriverPanel()
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             ViewData["User"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                usertype = "driver";
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         public ActionResult DriverApplication()
         {
-            ViewData.Clear();
-            ViewData["User"] = currentuser.Login;
-            return View();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
+                ViewData["User"] = currentuser.Login;
+                db.Database.Connection.Open();
+                List<DBModels.Запросы> list = (from e in db.Запросы where (e.ВодительID == currentuser.ВодительID) select e).ToList();
+                ViewData["Requests"] = list;
+                db.Database.Connection.Close();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
+        }
+        [HttpPost]
+        public ActionResult DriverApplication(long ReqIdVal)
+        {
+            if (currentuser != null)
+            {
+                db.Database.Connection.Open();
+                List<DBModels.Запросы> obj = (from e in db.Запросы where (e.ЗапросID == ReqIdVal) select e).ToList();
+                db.Запросы.Remove(obj[0]);
+                db.SaveChanges();
+                TempData["alertMessage"] = "Заявка была успешно удалена";
+                db.Database.Connection.Close();
+                return RedirectToAction("DriverApplication");
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         public ActionResult ApplicationInfo(string Id)
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             ViewData["Id"] = Id;
             ViewData["Name"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         [HttpPost]
@@ -194,7 +266,9 @@ namespace DriverScoring.Controllers
 
         public ActionResult ApplicationDecision(string dec,long requestid)
         {
-            if (dec == "Принять")
+            if (currentuser != null)
+            {
+                if (dec == "Принять")
             {
                 db.Database.Connection.Open();
                 List<DBModels.Запросы> obj = (from e in db.Запросы where(e.ЗапросID==requestid) select e).ToList();
@@ -225,14 +299,28 @@ namespace DriverScoring.Controllers
                 RequestIdent = requestid;
                 return RedirectToAction("EnterReason",new {reqid=requestid });
             }
-            
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
+
         }
         
         public ActionResult EnterReason(long reqid)
         {
-            ViewData.Clear();
+            if (currentuser != null)
+            {
+                ViewData.Clear();
             ViewData["Name"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
         }
 
         [HttpPost]
@@ -261,6 +349,66 @@ namespace DriverScoring.Controllers
             db.SaveChanges();
             db.Database.Connection.Close();
             return RedirectToAction("AdministratorPanel");
+        }
+        public ActionResult NewDriverApplication()
+        {
+            if (currentuser != null)
+            {
+                ViewData["Name"] = currentuser.Login;
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
+        }
+        [HttpPost]
+        public ActionResult NewDriverApplication(string CarId)
+        {
+            DBModels.Запросы obj = new DBModels.Запросы();
+            obj.ВодительID = currentuser.ВодительID;
+            obj.ЗапросРассмотрен = 1;
+            obj.ДатаЗапроса = DateTime.Today.ToString();
+            db.Database.Connection.Open();
+            long id = 0;
+            try
+            {
+                id = (long)db.Запросы.Max(e => e.ЗапросID) + 1;
+            }
+            catch
+            {
+
+            }
+            obj.ЗапросID = id;
+            obj.МашинаID = (long)(Convert.ToInt32(CarId));
+            obj.ВремяВыдачиМашины = "";
+            obj.ВремяПолученияМашины = "";
+            db.Запросы.Add(obj);
+            db.SaveChanges();
+            db.Database.Connection.Close();
+            return RedirectToAction("DriverApplication");
+        }
+        public ActionResult Survey()
+        {
+            if (currentuser != null)
+            {
+                ViewData["Name"] = currentuser.Login;
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("LogIn");
+            }
+        }
+        public ActionResult LogOut()
+        {
+            currentuser = null;
+            usertype = "";
+            return RedirectToAction("LogIn");
         }
     }
 }
