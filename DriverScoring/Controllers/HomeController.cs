@@ -70,7 +70,8 @@ namespace DriverScoring.Controllers
             List<DBModels.Пользователи> codes = (from e in db.Пользователи where (e.Login == SignInLogin && e.Password == SignInPassword) select e).ToList();
             if (codes.Count != 0)
             {
-                List<DBModels.Водители> obj = (from e in db.Водители where (e.ПользовательID == codes[0].ПользовательID) select e).ToList();
+                long num = codes[0].ПользовательID;
+                List<DBModels.Водители> obj = (from e in db.Водители where (e.ПользовательID == num) select e).ToList();
                 if (obj.Count() != 0)
                 {
                     currentuser = codes[0];
