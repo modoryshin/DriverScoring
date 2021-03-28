@@ -231,9 +231,8 @@ namespace ScoreModelImplement
                         case '/':
                         case '^':
                             {
-                                if (operatorStack.Count != 0)
-                                    if (opPriority[operatorStack.Peek()] >= opPriority[mathExpression[i]])
-                                        result += "," + operatorStack.Pop();
+                                while (operatorStack.Count != 0 && opPriority[operatorStack.Peek()] >= opPriority[mathExpression[i]])
+                                    result += "," + operatorStack.Pop();
 
                                 operatorStack.Push(mathExpression[i]);
                                 break;
