@@ -15,6 +15,7 @@ namespace DriverScoring.Controllers
 
         public static DBModels.mainEntitiesDB db = new DBModels.mainEntitiesDB(fixedConnectionString);
         static DBModels.Пользователи currentuser;
+        static string usertype = "";
         public static long RequestIdent;
         public ActionResult Index()
         {
@@ -41,13 +42,14 @@ namespace DriverScoring.Controllers
             contextDB.SaveChanges();
             */
 
-
             return RedirectToAction("LogIn");
         }
 
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
 
@@ -55,11 +57,15 @@ namespace DriverScoring.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
 
         public ActionResult LogIn()
         {
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
         [HttpPost]
@@ -80,8 +86,8 @@ namespace DriverScoring.Controllers
                 }
                 else
                 {
-
-                    List<long> id1 = (from e in db.Аналитики where (e.ПользовательID == codes[0].ПользовательID) select e.АналитикID).ToList();
+                    num = codes[0].ПользовательID;
+                    List<long> id1 = (from e in db.Аналитики where (e.ПользовательID == num) select e.АналитикID).ToList();
                     currentuser = codes[0];
 
                     db.Database.Connection.Close();
@@ -94,11 +100,14 @@ namespace DriverScoring.Controllers
                 TempData["alertMessage"] = "Такой аккаунт не существует";
 
                 db.Database.Connection.Close();
+                ViewBag.logged = currentuser != null;
                 return View();
             }
         }
         public ActionResult Register()
         {
+            ViewBag.logged = currentuser != null;
+            ViewBag.type = usertype;
             return View();
         }
         [HttpPost]
@@ -149,6 +158,8 @@ namespace DriverScoring.Controllers
                 ViewData["ID"] = ID;
                 TempData["alertMessage"] = "Аккаунт с указанными данными уже существует";
                 db.Database.Connection.Close();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
                 return View();
             }
 
@@ -164,7 +175,10 @@ namespace DriverScoring.Controllers
             List<DBModels.Запросы> list = (from e in db.Запросы select e).ToList();
             db.Database.Connection.Close();
             ViewData["RequestList"] = list;
-            return View();
+                ViewBag.logged = currentuser != null;
+                usertype = "admin";
+                ViewBag.type = usertype;
+                return View();
             }
             else
             {
@@ -178,7 +192,10 @@ namespace DriverScoring.Controllers
             {
                 ViewData.Clear();
             ViewData["User"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                usertype = "driver";
+                ViewBag.type = usertype;
+                return View();
             }
             else
             {
@@ -196,6 +213,8 @@ namespace DriverScoring.Controllers
                 List<DBModels.Запросы> list = (from e in db.Запросы where (e.ВодительID == currentuser.ВодительID) select e).ToList();
                 ViewData["Requests"] = list;
                 db.Database.Connection.Close();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
                 return View();
             }
             else
@@ -229,7 +248,9 @@ namespace DriverScoring.Controllers
                 ViewData.Clear();
             ViewData["Id"] = Id;
             ViewData["Name"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
             }
             else
             {
@@ -292,7 +313,9 @@ namespace DriverScoring.Controllers
             {
                 ViewData.Clear();
             ViewData["Name"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
             }
             else
             {
@@ -332,7 +355,9 @@ namespace DriverScoring.Controllers
             if (currentuser != null)
             {
                 ViewData["Name"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
             }
             else
             {
@@ -370,7 +395,9 @@ namespace DriverScoring.Controllers
             if (currentuser != null)
             {
                 ViewData["Name"] = currentuser.Login;
-            return View();
+                ViewBag.logged = currentuser != null;
+                ViewBag.type = usertype;
+                return View();
             }
             else
             {
@@ -380,6 +407,7 @@ namespace DriverScoring.Controllers
         public ActionResult LogOut()
         {
             currentuser = null;
+            usertype = "";
             return RedirectToAction("LogIn");
         }
     }

@@ -18,7 +18,23 @@
                     <span class="icon-bar"></span>
                 </button>
                 <!--@Html.ActionLink("На главную", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })-->
-                <a href='@Url.Action("Index",  "Home", new { area = "" })'><img src='~/Content/icon_home.png' /></a>
+                @if (ViewBag.type == "admin")
+                {
+                    <a href='@Url.Action("AdministratorPanel", "Home", new { area = "" })'><img src='~/Content/icon_home.png' /></a>
+                }
+                else
+                    if (ViewBag.type == "driver")
+                {
+                    <a href='@Url.Action("DriverPanel", "Home", new { area = "" })'><img src='~/Content/icon_home.png' /></a>
+                }
+                else
+                {
+                    <a href='@Url.Action("Index", "Home", new { area = "" })'><img src='~/Content/icon_home.png' /></a>
+                }
+                @if (ViewBag.logged)
+                {
+                    @Html.ActionLink("Выйти из аккаунта", "LogOut", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                }
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
